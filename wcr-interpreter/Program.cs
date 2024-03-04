@@ -1,13 +1,3 @@
-﻿enum TokenType
-{
-    STRING,
-    NUMBER,
-    WHITESPACE
-}
+﻿Console.WriteLine("Hello, please input some wcr code and then press the Enter key");
 
-struct Token
-{
-    public string Literal { get; set; }
 
-    public TokenType Type { get; set; }
-}
