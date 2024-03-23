@@ -62,16 +62,17 @@ namespace wrc_interpreter_tests
                                        new Token() { Literal = "", Type = TokenType.EOF },
             };
 
-            foreach (Token token in expectedTokens)
+            for (int i = 0; i< expectedTokens.Length; i++)
             {
+                Token token = expectedTokens[i];
                 var tok = _lexer.Next();
                 if (tok.Type != token.Type)
                 {
-                    Assert.Fail("The type of the token is incorrect - Expected type: {0}, Actual type: {1}", token.Type, tok.Type);
+                    Assert.Fail("The type of the token is incorrect - Expected type: {0}, Actual type: {1} , Index : {2}", token.Type, tok.Type, i);
                 }
                 if (tok.Literal != token.Literal)
                 {
-                    Assert.Fail("The value of the token is incorrect - Expected value: {0}, Actual value: {1}", token.Literal, tok.Literal);
+                    Assert.Fail("The value of the token is incorrect - Expected value: {0}, Actual value: {1}, , Index : {2}", token.Literal, tok.Literal, i);
                 }
             }
         }

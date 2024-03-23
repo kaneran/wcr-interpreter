@@ -13,3 +13,9 @@ switch (x)
         else Console.WriteLine("Nope");
         break;
 }
+
+
+var Ch = '=';
+var isWhiteSpace = Ch.Equals(' ') || Ch.Equals('\n') || Ch.Equals('\r') || Ch.Equals('\t');
+
+Console.WriteLine(isWhiteSpace);

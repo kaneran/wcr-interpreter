@@ -36,6 +36,8 @@ namespace wcr_interpreter
         public Token Next()
         {
             Token token;
+            bool isSymbol = true;
+            SkipWhitespace();
 
             switch (Ch)
             {
@@ -71,6 +73,13 @@ namespace wcr_interpreter
                     {
                         token = new Token() { Literal = ReadIdentifier() };
                         token.Type = LookupIdent(token.Literal);
+                        isSymbol = !isSymbol;
+                    }
+                    else if(Char.IsDigit(Ch))
+                    {
+                        token = new Token() { Literal = ReadNumber() };
+                        token.Type = TokenType.INT;
+                        isSymbol = !isSymbol;
                     }
                     else
                     {
@@ -78,7 +87,9 @@ namespace wcr_interpreter
                     }
                     break;
             }
-            ReadChar();
+
+            if (isSymbol)
+                ReadChar();
             return token;
         }
 
@@ -91,7 +102,18 @@ namespace wcr_interpreter
             {
                 ReadChar();
             }
-            return Input[startPosition..Position];
+            return Input.Substring(startPosition, Position - startPosition);
+        }
+
+        private string ReadNumber()
+        {
+            var startPosition = Position;
+            while (Char.IsDigit(Ch))
+            {
+                ReadChar();
+            }
+            var num = Input.Substring(startPosition, Position - startPosition);
+            return Input.Substring(startPosition, Position - startPosition);
         }
 
         Dictionary<string, string> keywords = new Dictionary<string, string>() { { "fn", TokenType.FUNCTION },
@@ -104,6 +126,14 @@ namespace wcr_interpreter
                 return keywords[ident];
             }
             return TokenType.IDENT;
+        }
+
+        private void SkipWhitespace()
+        {
+            while (Ch.Equals(' ') || Ch.Equals('\n') || Ch.Equals('\r') || Ch.Equals('\t'))
+            {
+                ReadChar();
+            }
         }
     }
 }
