@@ -28,6 +28,9 @@ namespace wcr_interpreter
         public const string LT = "<";
         public const string GT = ">";
 
+        public const string EQ = "==";
+        public const string NOT_EQ = "!=";
+
         //Delimiters
         public const string COMMA = ",";
         public const string SEMICOLON = ";";
@@ -40,6 +43,11 @@ namespace wcr_interpreter
         //Keywords
         public const string FUNCTION = "FUNCTION";
         public const string LET = "LET";
+        public const string TRUE = "TRUE";
+        public const string FALSE = "FALSE";
+        public const string IF = "IF";
+        public const string ELSE = "ELSE";
+        public const string RETURN = "RETURN";
 
     }
 }

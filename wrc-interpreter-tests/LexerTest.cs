@@ -17,7 +17,16 @@ namespace wrc_interpreter_tests
             };
             let result = add(five, ten);
             !-/*5;
-            5 < 10 > 5;";
+            5 < 10 > 5;
+
+            if (5 < 10) {
+                return true;
+            } else {
+                return false;
+            }
+
+            10 == 10;
+            10 != 9;";
             _lexer = new Lexer(_input);
 
         }
@@ -72,6 +81,31 @@ namespace wrc_interpreter_tests
                                        new Token() { Literal = "10", Type = TokenType.INT },
                                        new Token() { Literal = ">", Type = TokenType.GT },
                                        new Token() { Literal = "5", Type = TokenType.INT },
+                                       new Token() { Literal = ";", Type = TokenType.SEMICOLON },
+                                       new Token() { Literal = "if", Type = TokenType.IF },
+                                       new Token() { Literal = "(", Type = TokenType.LPAREN },
+                                       new Token() { Literal = "5", Type = TokenType.INT },
+                                       new Token() { Literal = "<", Type = TokenType.LT },
+                                       new Token() { Literal = "10", Type = TokenType.INT },
+                                       new Token() { Literal = ")", Type = TokenType.RPAREN },
+                                       new Token() { Literal = "{", Type = TokenType.LBRACE },
+                                       new Token() { Literal = "return", Type = TokenType.RETURN },
+                                       new Token() { Literal = "true", Type = TokenType.TRUE },
+                                       new Token() { Literal = ";", Type = TokenType.SEMICOLON },
+                                       new Token() { Literal = "}", Type = TokenType.RBRACE },
+                                       new Token() { Literal = "else", Type = TokenType.ELSE },
+                                       new Token() { Literal = "{", Type = TokenType.LBRACE },
+                                       new Token() { Literal = "return", Type = TokenType.RETURN },
+                                       new Token() { Literal = "false", Type = TokenType.FALSE },
+                                       new Token() { Literal = ";", Type = TokenType.SEMICOLON },
+                                       new Token() { Literal = "}", Type = TokenType.RBRACE },
+                                       new Token() { Literal = "10", Type = TokenType.INT },
+                                       new Token() { Literal = "==", Type = TokenType.EQ },
+                                       new Token() { Literal = "10", Type = TokenType.INT },
+                                       new Token() { Literal = ";", Type = TokenType.SEMICOLON },
+                                       new Token() { Literal = "10", Type = TokenType.INT },
+                                       new Token() { Literal = "!=", Type = TokenType.NOT_EQ },
+                                       new Token() { Literal = "9", Type = TokenType.INT },
                                        new Token() { Literal = ";", Type = TokenType.SEMICOLON },
                                        new Token() { Literal = "", Type = TokenType.EOF },
             };

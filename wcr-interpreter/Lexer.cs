@@ -33,6 +33,17 @@ namespace wcr_interpreter
             ReadPosition++;
         }
 
+        private char PeekChar()
+        {
+            if (ReadPosition >= Input.Length)
+            {
+                return '\0';
+            } else
+            {
+                return Input[ReadPosition];
+            }
+        }
+
         public Token Next()
         {
             Token token;
@@ -42,7 +53,17 @@ namespace wcr_interpreter
             switch (Ch)
             {
                 case '=':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.ASSIGN };
+                    if(PeekChar() == '=')
+                    {
+                        var ch = Input[Position].ToString();
+                        ReadChar();
+                        token = new Token() { Literal = ch + Ch.ToString(), Type = TokenType.EQ };
+                    }
+                    else
+                    {
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.ASSIGN };
+                    }
+                    
                     break;
                 case ';':
                     token = new Token() { Literal = Ch.ToString(), Type = TokenType.SEMICOLON };
@@ -69,7 +90,17 @@ namespace wcr_interpreter
                     token = new Token() { Literal = Ch.ToString(), Type = TokenType.MINUS };
                     break;
                 case '!':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.BANG };
+                    
+                    if (PeekChar() == '=')
+                    {
+                        var ch = Input[Position].ToString();
+                        ReadChar();
+                        token = new Token() { Literal = ch + Ch.ToString(), Type = TokenType.NOT_EQ };
+                    }
+                    else
+                    {
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.BANG };
+                    }
                     break;
                 case '/':
                     token = new Token() { Literal = Ch.ToString(), Type = TokenType.SLASH };
@@ -93,7 +124,7 @@ namespace wcr_interpreter
                         token.Type = LookupIdent(token.Literal);
                         isSymbol = !isSymbol;
                     }
-                    else if(Char.IsDigit(Ch))
+                    else if (Char.IsDigit(Ch))
                     {
                         token = new Token() { Literal = ReadNumber() };
                         token.Type = TokenType.INT;
@@ -112,11 +143,11 @@ namespace wcr_interpreter
         }
 
         private bool IsLetter(char ch) => ch == '_' || Char.IsLetter(ch);
-        
+
         private string ReadIdentifier()
         {
             var startPosition = Position;
-            while(IsLetter(Ch))
+            while (IsLetter(Ch))
             {
                 ReadChar();
             }
@@ -135,7 +166,13 @@ namespace wcr_interpreter
         }
 
         Dictionary<string, string> keywords = new Dictionary<string, string>() { { "fn", TokenType.FUNCTION },
-                                                                                 { "let", TokenType.LET} };
+                                                                                 { "let", TokenType.LET },
+                                                                                 {"true", TokenType.TRUE},
+                                                                                 {"false", TokenType.FALSE},
+                                                                                 {"if", TokenType.IF},
+                                                                                 {"else", TokenType.ELSE},
+                                                                                 {"return", TokenType.RETURN},
+        };
 
         private string LookupIdent(string ident)
         {
