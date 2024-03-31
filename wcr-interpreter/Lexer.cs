@@ -65,6 +65,24 @@ namespace wcr_interpreter
                 case '}':
                     token = new Token() { Literal = Ch.ToString(), Type = TokenType.RBRACE };
                     break;
+                case '-':
+                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.MINUS };
+                    break;
+                case '!':
+                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.BANG };
+                    break;
+                case '/':
+                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.SLASH };
+                    break;
+                case '*':
+                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.ASTERISK };
+                    break;
+                case '<':
+                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.LT };
+                    break;
+                case '>':
+                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.GT };
+                    break;
                 case '\0':
                     token = new Token() { Literal = "", Type = TokenType.EOF };
                     break;

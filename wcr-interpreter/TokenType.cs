@@ -20,6 +20,13 @@ namespace wcr_interpreter
         //Operators
         public const string ASSIGN = "=";
         public const string PLUS = "+";
+        public const string MINUS = "-";
+        public const string BANG = "!";
+        public const string ASTERISK = "*";
+        public const string SLASH = "/";
+
+        public const string LT = "<";
+        public const string GT = ">";
 
         //Delimiters
         public const string COMMA = ",";
@@ -33,5 +40,6 @@ namespace wcr_interpreter
         //Keywords
         public const string FUNCTION = "FUNCTION";
         public const string LET = "LET";
+
     }
 }

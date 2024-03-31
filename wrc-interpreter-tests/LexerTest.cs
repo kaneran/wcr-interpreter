@@ -15,7 +15,9 @@ namespace wrc_interpreter_tests
             let add = fn(x, y) {
                 x + y;
             };
-            let result = add(five, ten);";
+            let result = add(five, ten);
+            !-/*5;
+            5 < 10 > 5;";
             _lexer = new Lexer(_input);
 
         }
@@ -58,6 +60,18 @@ namespace wrc_interpreter_tests
                                        new Token() { Literal = ",", Type = TokenType.COMMA },
                                        new Token() { Literal = "ten", Type = TokenType.IDENT },
                                        new Token() { Literal = ")", Type = TokenType.RPAREN },
+                                       new Token() { Literal = ";", Type = TokenType.SEMICOLON },
+                                       new Token() { Literal = "!", Type = TokenType.BANG },
+                                       new Token() { Literal = "-", Type = TokenType.MINUS },
+                                       new Token() { Literal = "/", Type = TokenType.SLASH },
+                                       new Token() { Literal = "*", Type = TokenType.ASTERISK },
+                                       new Token() { Literal = "5", Type = TokenType.INT },
+                                       new Token() { Literal = ";", Type = TokenType.SEMICOLON },
+                                       new Token() { Literal = "5", Type = TokenType.INT },
+                                       new Token() { Literal = "<", Type = TokenType.LT },
+                                       new Token() { Literal = "10", Type = TokenType.INT },
+                                       new Token() { Literal = ">", Type = TokenType.GT },
+                                       new Token() { Literal = "5", Type = TokenType.INT },
                                        new Token() { Literal = ";", Type = TokenType.SEMICOLON },
                                        new Token() { Literal = "", Type = TokenType.EOF },
             };
