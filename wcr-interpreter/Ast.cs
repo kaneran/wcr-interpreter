@@ -9,7 +9,7 @@ namespace wcr_interpreter
 {
     public class Ast
     {
-        struct Program {
+        public struct Program {
             public Statement[] Statements { get; }
         }
 
