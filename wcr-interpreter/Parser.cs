@@ -25,9 +25,9 @@ namespace wcr_interpreter
             PeekToken = Lexer.Next();
         }
 
-        private Ast.Program ParseProgram()
+        public Ast.Program ParseProgram()
         {
-            return new Ast.Program();
+            return null;
         }
 
     }
