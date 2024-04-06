@@ -9,8 +9,8 @@ namespace wcr_interpreter
 {
     public class Ast
     {
-        public class Program {
-            public Statement[] Statements { get; }
+        public struct Program {
+            public Statement[] Statements { get; set;  }
         }
 
         string TokenLiteral(Program p)

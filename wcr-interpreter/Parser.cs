@@ -27,7 +27,7 @@ namespace wcr_interpreter
 
         public Ast.Program ParseProgram()
         {
-            return null;
+            var program = new Ast.Program() { Statements = Array.Empty<Statement>()};
         }
 
     }
