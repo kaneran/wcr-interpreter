@@ -28,6 +28,28 @@ namespace wcr_interpreter
         public Ast.Program ParseProgram()
         {
             var program = new Ast.Program() { Statements = Array.Empty<Statement>()};
+            while(CurToken.Type != TokenType.EOF)
+            {
+                var statement = ParseStatement();
+                if(statement != null)
+                {
+                    program.Statements.Append(statement);
+                }
+                NextToken();
+            }
+
+            return program;
+        }
+
+        private Statement ParseStatement()
+        {
+            switch(CurToken.Type)
+            {
+                case TokenType.LET:
+                    return ParseLetStatement();
+                default:
+                    return null;
+            }
         }
 
     }
