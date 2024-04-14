@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static wcr_interpreter.Ast;
 
 namespace wcr_interpreter
 {
@@ -27,13 +28,13 @@ namespace wcr_interpreter
 
         public Ast.Program ParseProgram()
         {
-            var program = new Ast.Program() { Statements = Array.Empty<Statement>()};
-            while(CurToken.Type != TokenType.EOF)
+            var program = new Ast.Program() { Statements = new List<Statement>()};
+            while(!CurTokenIs(TokenType.EOF))
             {
                 var statement = ParseStatement();
                 if(statement != null)
                 {
-                    program.Statements.Append(statement);
+                    program.Statements.Add(statement);
                 }
                 NextToken();
             }
@@ -49,6 +50,43 @@ namespace wcr_interpreter
                     return ParseLetStatement();
                 default:
                     return null;
+            }
+        }
+
+        private LetStatement ParseLetStatement()
+        {
+            var statement = new LetStatement() { Token = CurToken};
+            if (!ExpectPeek(TokenType.IDENT))
+            {
+                return statement;
+            }
+
+            statement.Name = new Identifier() { Token = CurToken, Value = CurToken.Literal };
+
+            if (!ExpectPeek(TokenType.ASSIGN))
+            {
+                return statement;
+            }
+
+            while (CurTokenIs(TokenType.SEMICOLON))
+            {
+                NextToken();
+            }
+            return statement;
+        }
+
+        private bool CurTokenIs(string type) => PeekToken.Type == type;
+        private bool PeekTokenIs(string type) => PeekToken.Type == type;
+
+        private bool ExpectPeek(string type)
+        {
+            if (PeekTokenIs(type))
+            {
+                NextToken();
+                return true;
+            } else
+            {
+                return false;
             }
         }
 

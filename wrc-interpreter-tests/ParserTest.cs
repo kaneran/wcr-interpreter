@@ -23,13 +23,13 @@ namespace wrc_interpreter_tests
         public void TestLetStatements()
         {
             var program = _parser.ParseProgram();
-            if(program == null)
+            //if(program == null)
+            //{
+            //    Assert.Fail("ParseProgram() returned null");
+            //}
+            if(program.Statements.Count != 3)
             {
-                Assert.Fail("ParseProgram() returned null");
-            }
-            if(program.Statements.Length != 3)
-            {
-                Assert.Fail("program.Statements does not contain 3 statement. Actual length: {0}", program.Statements.Length);
+                Assert.Fail("program.Statements does not contain 3 statement. Actual length: {0}", program.Statements.Count);
             }
             var tests = new[] {
                 new { ExpectedIdentifier = "x" },
