@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System.Text;
 using wcr_interpreter;
 
 namespace wrc_interpreter_tests
@@ -12,9 +13,9 @@ namespace wrc_interpreter_tests
         [SetUp]
         public void Setup()
         {
-            _input = @"let x = 5;
-                       let y = 10;
-                       let foobar = 838383;";
+            _input = @"let x 5;
+                       let = 10;
+                       let 838383;";
             _lexer = new Lexer(_input);
             _parser = new Parser(_lexer);
         }
@@ -23,6 +24,8 @@ namespace wrc_interpreter_tests
         public void TestLetStatements()
         {
             var program = _parser.ParseProgram();
+            var errors = _parser.Errors();
+            CheckParseErrors(errors);
             //if(program == null)
             //{
             //    Assert.Fail("ParseProgram() returned null");
@@ -44,6 +47,23 @@ namespace wrc_interpreter_tests
                     return;
                 }
             }
+        }
+
+        private void CheckParseErrors(List<string> errors)
+        {
+            if(errors.Count == 0)
+            {
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"\"parser has {errors.Count} errors\"");
+
+            foreach ( var error in errors)
+            {
+                sb.AppendLine(error);
+            }
+            Assert.Fail(sb.ToString());
         }
 
         private bool TestLetStatement(Statement statement, string name)

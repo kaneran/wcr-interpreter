@@ -13,11 +13,22 @@ namespace wcr_interpreter
         Token CurToken { get; set; }
         Token PeekToken { get; set; }
 
+        private List<string> _errors;
+
         public Parser(Lexer lexer)
         {
             Lexer = lexer;
+            _errors = new List<string>();
             NextToken();
             NextToken();
+        }
+
+        public List<string> Errors() => _errors;
+
+        private void PeekError(string type)
+        {
+            string errorMsg = $"Expected token type : {type} , actual token type : {PeekToken.Type}";
+            _errors.Add(errorMsg);
         }
 
         private void NextToken()
@@ -42,7 +53,7 @@ namespace wcr_interpreter
             return program;
         }
 
-        private Statement ParseStatement()
+        private Statement? ParseStatement()
         {
             switch(CurToken.Type)
             {
@@ -53,19 +64,19 @@ namespace wcr_interpreter
             }
         }
 
-        private LetStatement ParseLetStatement()
+        private LetStatement? ParseLetStatement()
         {
             var statement = new LetStatement() { Token = CurToken};
             if (!ExpectPeek(TokenType.IDENT))
             {
-                return statement;
+                return null;
             }
 
             statement.Name = new Identifier() { Token = CurToken, Value = CurToken.Literal };
 
             if (!ExpectPeek(TokenType.ASSIGN))
             {
-                return statement;
+                return null;
             }
 
             while (CurTokenIs(TokenType.SEMICOLON))
@@ -86,6 +97,7 @@ namespace wcr_interpreter
                 return true;
             } else
             {
+                PeekError(type);
                 return false;
             }
         }

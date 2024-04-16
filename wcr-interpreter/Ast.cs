@@ -25,7 +25,7 @@ namespace wcr_interpreter
             }
         }
 
-        public struct LetStatement : Statement {
+        public class LetStatement : Statement {
             public Token Token { get; set; }
             public Identifier Name { get; set; }
             public Expression Expression { get; }
