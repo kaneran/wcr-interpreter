@@ -59,9 +59,24 @@ namespace wcr_interpreter
             {
                 case TokenType.LET:
                     return ParseLetStatement();
+                case TokenType.RETURN: 
+                    return ParseReturnStatement();
                 default:
                     return null;
             }
+        }
+
+        private ReturnStatement ParseReturnStatement()
+        {
+            var statement = new ReturnStatement() { Token = CurToken };
+            NextToken();
+
+            while (!CurTokenIs(TokenType.SEMICOLON))
+            {
+                NextToken();
+            }
+            return statement;
+
         }
 
         private LetStatement? ParseLetStatement()
@@ -79,7 +94,7 @@ namespace wcr_interpreter
                 return null;
             }
 
-            while (CurTokenIs(TokenType.SEMICOLON))
+            while (!CurTokenIs(TokenType.SEMICOLON))
             {
                 NextToken();
             }

@@ -38,6 +38,19 @@ namespace wcr_interpreter
             public string TokenLiteral() => Token.Literal;
         }
 
+        public class ReturnStatement : Statement
+        {
+            public Token Token { get; set; }
+            public Expression Expression { get; }
+
+            public void StatementNode()
+            {
+                
+            }
+
+            public string TokenLiteral() => Token.Literal;
+        }
+
 
         public struct Identifier : Expression
         {

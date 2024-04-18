@@ -6,25 +6,18 @@ namespace wrc_interpreter_tests
 {
     public class ParserTests
     {
-        private Lexer _lexer;
-        private Parser _parser;
-        private string _input;
-
-        [SetUp]
-        public void Setup()
-        {
-            _input = @"let x 5;
-                       let = 10;
-                       let 838383;";
-            _lexer = new Lexer(_input);
-            _parser = new Parser(_lexer);
-        }
-
+        
         [Test]
         public void TestLetStatements()
         {
-            var program = _parser.ParseProgram();
-            var errors = _parser.Errors();
+            var input = @"let x = 5;
+                       let y = 10;
+                       let foobar = 838383;";
+            var lexer = new Lexer(input);
+            var parser = new Parser(lexer);
+
+            var program = parser.ParseProgram();
+            var errors = parser.Errors();
             CheckParseErrors(errors);
             //if(program == null)
             //{
@@ -91,6 +84,55 @@ namespace wrc_interpreter_tests
                 return false;
             }
             return true;
+        }
+
+        private bool TestReturnStatement(Statement statement)
+        {
+            if (statement.TokenLiteral() != "return")
+            {
+                Assert.Fail("statement.TokenLiteral not 'return', got : {0}", statement.TokenLiteral());
+                return false;
+            }
+
+            if (statement is not Ast.ReturnStatement returnStatement)
+            {
+                Assert.Fail("statement not Ast.ReturnStatement, got : {0}", statement);
+                return false;
+            }
+
+         
+            return true;
+        }
+
+        [Test]
+        public void TestReturnStatements()
+        {
+            var input = @"return 5;
+                       return 10;
+                       return 743434;";
+            var lexer = new Lexer(input);
+            var parser = new Parser(lexer);
+
+            var program = parser.ParseProgram();
+            var errors = parser.Errors();
+            CheckParseErrors(errors);
+            //if(program == null)
+            //{
+            //    Assert.Fail("ParseProgram() returned null");
+            //}
+            if (program.Statements.Count != 3)
+            {
+                Assert.Fail("program.Statements does not contain 3 statement. Actual length: {0}", program.Statements.Count);
+            }
+
+            for (int i = 0; i < program.Statements.Count; i++)
+            {
+                var statement = program.Statements[i];
+                if (!TestReturnStatement(statement))
+                {
+                    return;
+                }
+            }
         }
     }
 }
