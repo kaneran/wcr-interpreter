@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Newtonsoft.Json.Linq;
 using System.Text;
 using wcr_interpreter;
+using static wcr_interpreter.Ast;
 
 namespace wrc_interpreter_tests
 {
@@ -132,6 +134,30 @@ namespace wrc_interpreter_tests
                 {
                     return;
                 }
+            }
+        }
+
+        [Test]
+        public void TestString()
+        {
+            var input = "let myVar = anotherVar;";
+            var program = new Ast.Program()
+            {
+                Statements = new List<Statement> {
+                                              new LetStatement(){
+                                                  Token = new Token{ Type = TokenType.LET, Literal = "let"},
+                                                  Name = new Identifier() {
+                                                      Token = new Token(){ Type = TokenType.IDENT, Literal = "myVar"},
+                                                      Value = "myVar"},
+                                                  Value = new Identifier(){
+                                                      Token = new Token(){ Type = TokenType.IDENT, Literal = "anotherVar"},
+                                                      Value = "anotherVar"}
+                                              }
+            }
+            };
+            if(program.String() != "let myVar = anotherVar;")
+            {
+                Assert.Fail("program.String() wrong. got {0}", program.String());
             }
         }
     }

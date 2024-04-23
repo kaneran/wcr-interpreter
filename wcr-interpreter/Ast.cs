@@ -11,6 +11,17 @@ namespace wcr_interpreter
     {
         public struct Program {
             public List<Statement> Statements { get; set;  }
+
+            public string String()
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (Statement s in Statements)
+                {
+                    sb.Append(s.String());
+                }
+
+                return sb.ToString();
+            }
         }
 
         string TokenLiteral(Program p)
@@ -25,14 +36,50 @@ namespace wcr_interpreter
             }
         }
 
-        public class LetStatement : Statement {
+        public class ExpressionStatement : Statement
+        {
             public Token Token { get; set; }
-            public Identifier Name { get; set; }
             public Expression Expression { get; }
 
             public void StatementNode()
             {
+                
+            }
 
+            public string String()
+            {
+                if(Expression is not null)
+                {
+                    return Expression.String();
+                }
+                return "";
+            }
+
+            public string TokenLiteral() => Token.Literal;
+        }
+
+        public class LetStatement : Statement {
+            public Token Token { get; set; }
+            public Identifier Name { get; set; }
+            public Expression Value { get; set; }
+
+            public void StatementNode()
+            {
+
+            }
+
+            public string String()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"{TokenLiteral()} ");
+                sb.Append($"{Name.String()}");
+                sb.Append(" = ");
+                if(Name.Value is not null)
+                {
+                    sb.Append($"{Value.String()}");
+                }
+                sb.Append(";");
+                return sb.ToString();
             }
 
             public string TokenLiteral() => Token.Literal;
@@ -41,7 +88,19 @@ namespace wcr_interpreter
         public class ReturnStatement : Statement
         {
             public Token Token { get; set; }
-            public Expression Expression { get; }
+            public Expression Value { get; }
+
+            public string String()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"{TokenLiteral()} ");
+                if(Value is not null)
+                {
+                    sb.Append($"{Value.String()} ");
+                }
+                sb.Append(";");
+                return sb.ToString();
+            }
 
             public void StatementNode()
             {
@@ -60,6 +119,11 @@ namespace wcr_interpreter
             public void ExpressionNode()
             {
 
+            }
+
+            public string String()
+            {
+                return Value;
             }
 
             public string TokenLiteral() => Token.Literal;

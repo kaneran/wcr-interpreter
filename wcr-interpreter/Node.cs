@@ -9,5 +9,6 @@ namespace wcr_interpreter
     public interface Node
     {
         string TokenLiteral();
+        string String();
     }
 }
