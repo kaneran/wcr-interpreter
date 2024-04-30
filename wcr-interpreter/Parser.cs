@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,8 @@ namespace wcr_interpreter
         Token PeekToken { get; set; }
 
         private List<string> _errors;
+        private Dictionary<string, Func<Expression>> _prefixParseFns;
+        private Dictionary<string, Func<Expression,Expression>> _infixParseFns;
 
         public Parser(Lexer lexer)
         {
@@ -21,7 +24,13 @@ namespace wcr_interpreter
             _errors = new List<string>();
             NextToken();
             NextToken();
+
+            _prefixParseFns = new Dictionary<string, Func<Expression>>();
+            _infixParseFns = new Dictionary<string, Func<Expression, Expression>>();
         }
+
+        private void RegisterPrefix(string tokenType, Func<Expression> fn) => _prefixParseFns[tokenType] = fn;
+        private void RegisterInfix(string tokenType, Func<Expression, Expression> fn) => _infixParseFns[tokenType] = fn;
 
         public List<string> Errors() => _errors;
 
@@ -62,8 +71,12 @@ namespace wcr_interpreter
                 case TokenType.RETURN: 
                     return ParseReturnStatement();
                 default:
-                    return null;
+                    return ParseExpressionStatement();
             }
+        }
+
+        private ExpressionStatement ParseExpressionStatement() {
+            return null;
         }
 
         private ReturnStatement ParseReturnStatement()
@@ -116,6 +129,9 @@ namespace wcr_interpreter
                 return false;
             }
         }
+
+        private Func<Expression> PrefixParseFn;
+        private Func<Expression,Expression> InfixParseFn;
 
     }
 }

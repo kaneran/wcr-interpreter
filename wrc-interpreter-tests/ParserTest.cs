@@ -155,10 +155,52 @@ namespace wrc_interpreter_tests
                                               }
             }
             };
-            if(program.String() != "let myVar = anotherVar;")
+
+            if (!program.String().Equals("let myVar = anotherVar;"))
             {
                 Assert.Fail("program.String() wrong. got {0}", program.String());
             }
         }
+
+        [Test]
+        public void TestIdentifierExpression()
+        {
+            var input = "foobar;";
+            var lexer = new Lexer(input);
+            var parser = new Parser(lexer);
+
+            var program = parser.ParseProgram();
+            var errors = parser.Errors();
+            CheckParseErrors(errors);
+
+            if (program.Statements.Count != 1)
+            {
+                Assert.Fail("program has not enough statements. Got: {0}", program.Statements.Count);
+            }
+            var statement = program.Statements[0];
+
+            if (statement is not ExpressionStatement)
+            {
+                Assert.Fail("program.Statements[0] is not ast.ExpressionStatement. Got: {0}", statement);
+            }
+
+            var identifier = statement.Expression;
+
+            if (statement.Expression is not Identifier)
+            {
+                Assert.Fail("expression not *ast.Identifier. Got: {0}", identifier);
+            }
+
+            if (identifier.Value != "foobar")
+            {
+                Assert.Fail("identifier.Value not {0}. Got:{1}", "foobar", identifier.Value);
+            }
+
+            if (identifier.TokenLiteral() != "foobar")
+            {
+                Assert.Fail("identifier.TokenLiteral not {0}. Got:{1}", "foobar", identifier.TokenLiteral());
+            }
+        }
+
     }
 }
