@@ -39,7 +39,7 @@ namespace wcr_interpreter
         public class ExpressionStatement : Statement
         {
             public Token Token { get; set; }
-            public Expression Expression { get; }
+            public Expression Expression { get; set; }
 
             public void StatementNode()
             {

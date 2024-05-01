@@ -18,6 +18,7 @@ namespace wcr_interpreter
         private Dictionary<string, Func<Expression>> _prefixParseFns;
         private Dictionary<string, Func<Expression,Expression>> _infixParseFns;
 
+
         public Parser(Lexer lexer)
         {
             Lexer = lexer;
@@ -76,7 +77,16 @@ namespace wcr_interpreter
         }
 
         private ExpressionStatement ParseExpressionStatement() {
-            return null;
+            var statement = new ExpressionStatement() { Token = CurToken};
+            statement.Expression = ParseExpression(Constants.Precdence.LOWEST);
+            if (PeekTokenIs(TokenType.SEMICOLON))
+                NextToken();
+            return statement;
+        }
+
+        private Expression ParseExpression(string precedence)
+        {
+            throw new NotImplementedException();
         }
 
         private ReturnStatement ParseReturnStatement()
