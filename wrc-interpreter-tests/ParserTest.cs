@@ -184,19 +184,21 @@ namespace wrc_interpreter_tests
                 Assert.Fail("program.Statements[0] is not ast.ExpressionStatement. Got: {0}", statement);
             }
 
-            var identifier = statement.Expression;
+            var identifier = (statement as ExpressionStatement).Expression;
 
-            if (statement.Expression is not Identifier)
+            if (identifier is not Identifier)
             {
                 Assert.Fail("expression not *ast.Identifier. Got: {0}", identifier);
             }
 
-            if (identifier.Value != "foobar")
+            Identifier ident = (Identifier)identifier;
+
+            if (ident.Value != "foobar")
             {
-                Assert.Fail("identifier.Value not {0}. Got:{1}", "foobar", identifier.Value);
+                Assert.Fail("identifier.Value not {0}. Got:{1}", "foobar", ident.Value);
             }
 
-            if (identifier.TokenLiteral() != "foobar")
+            if (ident.TokenLiteral() != "foobar")
             {
                 Assert.Fail("identifier.TokenLiteral not {0}. Got:{1}", "foobar", identifier.TokenLiteral());
             }

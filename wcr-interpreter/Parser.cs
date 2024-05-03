@@ -28,7 +28,10 @@ namespace wcr_interpreter
 
             _prefixParseFns = new Dictionary<string, Func<Expression>>();
             _infixParseFns = new Dictionary<string, Func<Expression, Expression>>();
+            RegisterPrefix(TokenType.IDENT, ParseIdentifier);
         }
+
+        private Expression ParseIdentifier() => new Identifier() { Token = CurToken, Value = CurToken.Literal };
 
         private void RegisterPrefix(string tokenType, Func<Expression> fn) => _prefixParseFns[tokenType] = fn;
         private void RegisterInfix(string tokenType, Func<Expression, Expression> fn) => _infixParseFns[tokenType] = fn;
@@ -71,6 +74,8 @@ namespace wcr_interpreter
                     return ParseLetStatement();
                 case TokenType.RETURN: 
                     return ParseReturnStatement();
+                case TokenType.SEMICOLON:
+                    return null;
                 default:
                     return ParseExpressionStatement();
             }
@@ -86,7 +91,12 @@ namespace wcr_interpreter
 
         private Expression ParseExpression(string precedence)
         {
-            throw new NotImplementedException();
+            if(!_prefixParseFns.TryGetValue(CurToken.Type, out var prefix))
+            {
+                return null;
+            }
+            var leftExp = prefix();
+            return leftExp;
         }
 
         private ReturnStatement ParseReturnStatement()
