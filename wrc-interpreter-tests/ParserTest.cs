@@ -204,5 +204,46 @@ namespace wrc_interpreter_tests
             }
         }
 
+        [Test]
+        public void TestIntegerLiteralExpression()
+        {
+            var input = "5;";
+            var lexer = new Lexer(input);
+            var parser = new Parser(lexer);
+
+            var program = parser.ParseProgram();
+            var errors = parser.Errors();
+            CheckParseErrors(errors);
+
+            if (program.Statements.Count != 1)
+            {
+                Assert.Fail("program has not enough statements. Got: {0}", program.Statements.Count);
+            }
+            var statement = program.Statements[0];
+
+            if (statement is not ExpressionStatement)
+            {
+                Assert.Fail("program.Statements[0] is not ast.ExpressionStatement. Got: {0}", statement);
+            }
+
+            var expression = (statement as ExpressionStatement).Expression;
+
+            if (expression is not IntegerLiteral)
+            {
+                Assert.Fail("expression not *ast.IntegerLiteral. Got: {0}", expression);
+            }
+
+            var literal = (IntegerLiteral)expression;
+
+            if (literal.Value != 5)
+            {
+                Assert.Fail("literal.Value not {0}. Got:{1}", 5, literal.Value);
+            }
+
+            if (literal.TokenLiteral() != "5")
+            {
+                Assert.Fail("identifier.TokenLiteral not {0}. Got:{1}", "5", literal.TokenLiteral());
+            }
+        }
     }
 }

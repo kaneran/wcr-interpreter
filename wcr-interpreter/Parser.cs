@@ -29,6 +29,7 @@ namespace wcr_interpreter
             _prefixParseFns = new Dictionary<string, Func<Expression>>();
             _infixParseFns = new Dictionary<string, Func<Expression, Expression>>();
             RegisterPrefix(TokenType.IDENT, ParseIdentifier);
+            RegisterPrefix(TokenType.INT, ParseIntegerLiteral);
         }
 
         private Expression ParseIdentifier() => new Identifier() { Token = CurToken, Value = CurToken.Literal };
@@ -97,6 +98,21 @@ namespace wcr_interpreter
             }
             var leftExp = prefix();
             return leftExp;
+        }
+
+        private Expression ParseIntegerLiteral()
+        {
+            var literal = new IntegerLiteral() { Token = CurToken };
+            if(Int64.TryParse(CurToken.Literal, out Int64 value))
+            {
+                literal.Value = value;
+            } else
+            {
+                var msg = $"could not parse {CurToken.Literal} as integer";
+                _errors.Add(msg);
+            }
+
+            return literal;
         }
 
         private ReturnStatement ParseReturnStatement()

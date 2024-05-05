@@ -129,5 +129,19 @@ namespace wcr_interpreter
             public string TokenLiteral() => Token.Literal;
         }
 
+        public struct IntegerLiteral : Expression
+        {
+            public Token Token { get; set; }
+            public Int64 Value { get; set;  }
+
+            public void ExpressionNode()
+            {
+            }
+
+            public string String() => Token.Literal;
+
+            public string TokenLiteral() => Token.Literal;
+        }
+
     }
 }
