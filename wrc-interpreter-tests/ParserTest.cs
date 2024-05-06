@@ -245,5 +245,75 @@ namespace wrc_interpreter_tests
                 Assert.Fail("identifier.TokenLiteral not {0}. Got:{1}", "5", literal.TokenLiteral());
             }
         }
+
+        [Test]
+        public void TestParsingPrefixExpressions()
+        {
+            var prefixTests = new[] { new { input = "!5", operatr = "!", integerValue = 5 },
+                                      new { input = "-15", operatr = "-", integerValue = 15}  };
+            foreach ( var tt in prefixTests )
+            {
+                var lexer = new Lexer(tt.input);
+                var parser = new Parser(lexer);
+
+                var program = parser.ParseProgram();
+                var errors = parser.Errors();
+                CheckParseErrors(errors);
+
+                if (program.Statements.Count != 1)
+                {
+                    Assert.Fail("program has not enough statements. Got: {0}", program.Statements.Count);
+                }
+                var statement = program.Statements[0];
+
+                if (statement is not ExpressionStatement)
+                {
+                    Assert.Fail("program.Statements[0] is not ast.ExpressionStatement. Got: {0}", statement);
+                }
+
+                var expression = (statement as ExpressionStatement).Expression;
+
+                if (expression is not PrefixExpression)
+                {
+                    Assert.Fail("expression not *ast.PrefixExpression. Got: {0}", expression);
+                }
+
+                var exp = (PrefixExpression)expression;
+
+                if(exp.Operator != tt.operatr)
+                {
+                    Assert.Fail("exp.Operator is not {0}. Got: {1}", tt.operatr, exp.Operator);
+                }
+
+                if(!TestIntegerLiteral(exp.Right, tt.integerValue))
+                {
+                    return;
+                }
+            }
+        }
+
+        private bool TestIntegerLiteral(Expression il, Int64 value)
+        {
+            if(il is not IntegerLiteral)
+            {
+                Assert.Fail("il not ast.IntegerLiteral. Got: {0}", il);
+                return false;
+            }
+            var integ = (IntegerLiteral)il;
+
+            if(integ.Value != value)
+            {
+                Assert.Fail("integ.Value not {0}. Got: {1}", value, integ.Value);
+                return false;
+            }
+
+            if(integ.TokenLiteral() != value.ToString())
+            {
+                Assert.Fail("integ.TokenLiteral not {0}. Got: {1}", value, integ.TokenLiteral());
+                return false;
+            }
+
+            return true;
+        }
     }
 }
