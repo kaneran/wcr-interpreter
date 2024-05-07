@@ -113,6 +113,10 @@ namespace wcr_interpreter
 
         private Expression ParseIntegerLiteral()
         {
+            //07/05/2024: Added fix in the case where the CurToken get's reverted to the previous non-INT token before parsing.
+            if(CurToken.Type != TokenType.INT) {
+                NextToken();
+            }
             var literal = new IntegerLiteral() { Token = CurToken };
             if(Int64.TryParse(CurToken.Literal, out Int64 value))
             {
