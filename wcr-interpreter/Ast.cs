@@ -143,5 +143,29 @@ namespace wcr_interpreter
             public string TokenLiteral() => Token.Literal;
         }
 
+        public struct PrefixExpression : Expression
+        {
+            public Token Token { get; set; }
+            public string Operator { get; set; }
+            public Expression Right { get; set; }
+
+            public void ExpressionNode()
+            {
+                
+            }
+
+            public string String()
+            {
+                var sb = new StringBuilder();
+                sb.Append("(");
+                sb.Append(Operator);
+                sb.Append(Right.String());
+                sb.Append(")");
+                return sb.ToString();
+            }
+
+            public string TokenLiteral() => Token.Literal;
+        }
+
     }
 }

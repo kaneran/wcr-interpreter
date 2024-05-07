@@ -30,6 +30,8 @@ namespace wcr_interpreter
             _infixParseFns = new Dictionary<string, Func<Expression, Expression>>();
             RegisterPrefix(TokenType.IDENT, ParseIdentifier);
             RegisterPrefix(TokenType.INT, ParseIntegerLiteral);
+            RegisterPrefix(TokenType.BANG, ParsePrefixExpression);
+            RegisterPrefix(TokenType.MINUS, ParsePrefixExpression);
         }
 
         private Expression ParseIdentifier() => new Identifier() { Token = CurToken, Value = CurToken.Literal };
@@ -90,13 +92,22 @@ namespace wcr_interpreter
             return statement;
         }
 
+        private void NoPrefixParseFnError(string tokenType)
+        {
+            var msg = $"no prefix parse function for {tokenType} found";
+            _errors.Add(msg);
+        }
+
         private Expression ParseExpression(string precedence)
         {
             if(!_prefixParseFns.TryGetValue(CurToken.Type, out var prefix))
             {
+                NoPrefixParseFnError(CurToken.Type);
                 return null;
             }
+
             var leftExp = prefix();
+
             return leftExp;
         }
 
@@ -113,6 +124,16 @@ namespace wcr_interpreter
             }
 
             return literal;
+        }
+
+        private Expression ParsePrefixExpression()
+        {
+            var expression = new PrefixExpression() { Token = CurToken, Operator = CurToken.Literal };
+
+            NextToken();
+            expression.Right = ParseExpression(Constants.Precdence.PREFIX);
+
+            return expression;
         }
 
         private ReturnStatement ParseReturnStatement()
