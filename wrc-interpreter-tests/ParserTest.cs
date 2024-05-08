@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Newtonsoft.Json.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using wcr_interpreter;
 using static wcr_interpreter.Ast;
+using Expression = wcr_interpreter.Expression;
 
 namespace wrc_interpreter_tests
 {
@@ -292,22 +294,75 @@ namespace wrc_interpreter_tests
             }
         }
 
+
+        [Test]
+        public void TestParsingInfixExpressions()
+        {
+            var infixTests = new[] { new { input = "5 + 5;", leftValue = 5, operatr = "+", rightValue = 5 },
+                                      new { input = "5 - 5;", leftValue = 5, operatr = "-", rightValue = 5 },
+                                      new { input = "5 * 5;", leftValue = 5, operatr = "*", rightValue = 5 },
+                                      new { input = "5 / 5;", leftValue = 5, operatr = "/", rightValue = 5 },
+                                      new { input = "5 > 5;", leftValue = 5, operatr = ">", rightValue = 5 },
+                                      new { input = "5 < 5;", leftValue = 5, operatr = "<", rightValue = 5 },
+                                      new { input = "5 == 5;", leftValue = 5, operatr = "==", rightValue = 5 },
+                                      new { input = "5 != 5;", leftValue = 5, operatr = "!=", rightValue = 5 },};
+            foreach (var tt in infixTests)
+            {
+                var lexer = new Lexer(tt.input);
+                var parser = new Parser(lexer);
+
+                var program = parser.ParseProgram();
+                var errors = parser.Errors();
+                CheckParseErrors(errors);
+
+                if (program.Statements.Count != 1)
+                {
+                    Assert.Fail("program has not enough statements. Got: {0}", program.Statements.Count);
+                }
+                var statement = program.Statements[0];
+
+                if (statement is not ExpressionStatement)
+                {
+                    Assert.Fail("program.Statements[0] is not ast.ExpressionStatement. Got: {0}", statement);
+                }
+
+                var expression = (statement as ExpressionStatement).Expression;
+
+                if (expression is not InfixExpression)
+                {
+                    Assert.Fail("expression not *ast.PrefixExpression. Got: {0}", expression);
+                }
+
+                var exp = (InfixExpression)expression;
+
+                if (exp.Operator != tt.operatr)
+                {
+                    Assert.Fail("exp.Operator is not {0}. Got: {1}", tt.operatr, exp.Operator);
+                }
+
+                if (!TestIntegerLiteral(exp.Right, tt.rightValue))
+                {
+                    return;
+                }
+            }
+        }
+
         private bool TestIntegerLiteral(Expression il, Int64 value)
         {
-            if(il is not IntegerLiteral)
+            if (il is not IntegerLiteral)
             {
                 Assert.Fail("il not ast.IntegerLiteral. Got: {0}", il);
                 return false;
             }
             var integ = (IntegerLiteral)il;
 
-            if(integ.Value != value)
+            if (integ.Value != value)
             {
                 Assert.Fail("integ.Value not {0}. Got: {1}", value, integ.Value);
                 return false;
             }
 
-            if(integ.TokenLiteral() != value.ToString())
+            if (integ.TokenLiteral() != value.ToString())
             {
                 Assert.Fail("integ.TokenLiteral not {0}. Got: {1}", value, integ.TokenLiteral());
                 return false;
