@@ -19,7 +19,7 @@ namespace wcr_interpreter
             public static string CALL = "CALL";
         }
 
-        public static string[] Precedence = new string[]
+        private static string[] Precedence = new string[]
         {
             Precdence.LOWEST,
             Precdence.EQUALS,
@@ -29,5 +29,9 @@ namespace wcr_interpreter
             Precdence.PREFIX,
             Precdence.CALL
         };
+
+        public static int GetPrecedence(string precedence) => Array.IndexOf(Precedence, precedence);
+
+
     }
 }

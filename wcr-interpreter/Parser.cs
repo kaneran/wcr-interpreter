@@ -17,6 +17,7 @@ namespace wcr_interpreter
         private List<string> _errors;
         private Dictionary<string, Func<Expression>> _prefixParseFns;
         private Dictionary<string, Func<Expression,Expression>> _infixParseFns;
+        private Dictionary<string, int> _precedences;
 
 
         public Parser(Lexer lexer)
@@ -26,12 +27,64 @@ namespace wcr_interpreter
             NextToken();
             NextToken();
 
+            _precedences = new Dictionary<string, int>() {
+            { TokenType.EQ, Constants.GetPrecedence(Constants.Precdence.EQUALS) },
+            { TokenType.NOT_EQ, Constants.GetPrecedence(Constants.Precdence.EQUALS) },
+            { TokenType.LT, Constants.GetPrecedence(Constants.Precdence.LESSGREATER) },
+            { TokenType.GT, Constants.GetPrecedence(Constants.Precdence.LESSGREATER) },
+            { TokenType.PLUS, Constants.GetPrecedence(Constants.Precdence.SUM) },
+            { TokenType.MINUS, Constants.GetPrecedence(Constants.Precdence.SUM) },
+            { TokenType.SLASH, Constants.GetPrecedence(Constants.Precdence.PRODUCT) },
+            { TokenType.ASTERISK, Constants.GetPrecedence(Constants.Precdence.PRODUCT) },
+        };
             _prefixParseFns = new Dictionary<string, Func<Expression>>();
-            _infixParseFns = new Dictionary<string, Func<Expression, Expression>>();
             RegisterPrefix(TokenType.IDENT, ParseIdentifier);
             RegisterPrefix(TokenType.INT, ParseIntegerLiteral);
             RegisterPrefix(TokenType.BANG, ParsePrefixExpression);
             RegisterPrefix(TokenType.MINUS, ParsePrefixExpression);
+
+            _infixParseFns = new Dictionary<string, Func<Expression, Expression>>();
+            RegisterInfix(TokenType.PLUS, ParseInfixExpression);
+            RegisterInfix(TokenType.MINUS, ParseInfixExpression);
+            RegisterInfix(TokenType.SLASH, ParseInfixExpression);
+            RegisterInfix(TokenType.ASTERISK, ParseInfixExpression);
+            RegisterInfix(TokenType.EQ, ParseInfixExpression);
+            RegisterInfix(TokenType.NOT_EQ, ParseInfixExpression);
+            RegisterInfix(TokenType.LT, ParseInfixExpression);
+            RegisterInfix(TokenType.GT, ParseInfixExpression);
+        }
+
+        private int PeekPrecedence()
+        {
+            if (_precedences.TryGetValue(PeekToken.Type, out int result))
+            {
+                return result;
+            }
+            return Constants.GetPrecedence(Constants.Precdence.LOWEST);
+        }
+
+        private int CurPrecedence()
+        {
+            if (_precedences.TryGetValue(CurToken.Type, out int result))
+            {
+                return result;
+            }
+            return Constants.GetPrecedence(Constants.Precdence.LOWEST);
+        }
+
+        private Expression ParseInfixExpression(Expression left)
+        {
+            //if(!_precedences.TryGetValue(CurToken.Type, out int value))
+            //{
+            //    NextToken();
+            //}
+            //}
+
+            var expression = new InfixExpression() { Token = CurToken, Operator = CurToken.Literal, Left = left };
+            var precedence = CurPrecedence();
+            NextToken();
+            expression.Right = ParseExpression(precedence);
+            return expression;
         }
 
         private Expression ParseIdentifier() => new Identifier() { Token = CurToken, Value = CurToken.Literal };
@@ -86,7 +139,7 @@ namespace wcr_interpreter
 
         private ExpressionStatement ParseExpressionStatement() {
             var statement = new ExpressionStatement() { Token = CurToken};
-            statement.Expression = ParseExpression(Constants.Precdence.LOWEST);
+            statement.Expression = ParseExpression(Constants.GetPrecedence(Constants.Precdence.LOWEST));
             if (PeekTokenIs(TokenType.SEMICOLON))
                 NextToken();
             return statement;
@@ -98,7 +151,7 @@ namespace wcr_interpreter
             _errors.Add(msg);
         }
 
-        private Expression ParseExpression(string precedence)
+        private Expression ParseExpression(int precedence)
         {
             if(!_prefixParseFns.TryGetValue(CurToken.Type, out var prefix))
             {
@@ -107,6 +160,17 @@ namespace wcr_interpreter
             }
 
             var leftExp = prefix();
+
+            while(!PeekTokenIs(TokenType.SEMICOLON) && precedence < PeekPrecedence()) {
+                if(!_infixParseFns.TryGetValue(PeekToken.Type, out var infix))
+                {
+                    return leftExp;
+                }
+
+                NextToken();
+                leftExp = infix(leftExp);
+
+            }
 
             return leftExp;
         }
@@ -135,7 +199,7 @@ namespace wcr_interpreter
             var expression = new PrefixExpression() { Token = CurToken, Operator = CurToken.Literal };
 
             NextToken();
-            expression.Right = ParseExpression(Constants.Precdence.PREFIX);
+            expression.Right = ParseExpression(Constants.GetPrecedence(Constants.Precdence.PREFIX));
 
             return expression;
         }
