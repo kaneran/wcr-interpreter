@@ -11,9 +11,10 @@ namespace wcr_interpreter
     public struct Parser
     {
         Lexer Lexer { get; }
+
         Token CurToken { get; set; }
         Token PeekToken { get; set; }
-
+  
         private List<string> _errors;
         private Dictionary<string, Func<Expression>> _prefixParseFns;
         private Dictionary<string, Func<Expression,Expression>> _infixParseFns;
@@ -74,11 +75,11 @@ namespace wcr_interpreter
 
         private Expression ParseInfixExpression(Expression left)
         {
-            //if(!_precedences.TryGetValue(CurToken.Type, out int value))
-            //{
-            //    NextToken();
-            //}
-            //}
+            if(!_precedences.TryGetValue(CurToken.Type, out int value))
+            {
+                NextToken(true);
+            }
+            
 
             var expression = new InfixExpression() { Token = CurToken, Operator = CurToken.Literal, Left = left };
             var precedence = CurPrecedence();
@@ -100,10 +101,10 @@ namespace wcr_interpreter
             _errors.Add(errorMsg);
         }
 
-        private void NextToken()
+        private void NextToken(bool doSkip = false)
         {
             CurToken = PeekToken;
-            PeekToken = Lexer.Next();
+            PeekToken = Lexer.Next(doSkip);
         }
 
         public Ast.Program ParseProgram()
@@ -168,6 +169,7 @@ namespace wcr_interpreter
                 }
 
                 NextToken();
+                
                 leftExp = infix(leftExp);
 
             }
@@ -179,7 +181,7 @@ namespace wcr_interpreter
         {
             //07/05/2024: Added fix in the case where the CurToken get's reverted to the previous non-INT token before parsing.
             if(CurToken.Type != TokenType.INT) {
-                NextToken();
+                NextToken(true);
             }
             var literal = new IntegerLiteral() { Token = CurToken };
             if(Int64.TryParse(CurToken.Literal, out Int64 value))

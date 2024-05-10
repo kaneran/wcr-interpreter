@@ -13,6 +13,8 @@ namespace wcr_interpreter
         public int Position { get; set; }
         public int ReadPosition { get; set; }
 
+        private Token _token { get; set; }
+
         public Lexer(string input)
         {
             Input = input;
@@ -44,102 +46,113 @@ namespace wcr_interpreter
             }
         }
 
-        public Token Next()
+        
+
+        public Token Next(bool doSkip = false)
         {
-            Token token;
-            bool isSymbol = true;
-            SkipWhitespace();
-
-            switch (Ch)
+            if (doSkip)
             {
-                case '=':
-                    if(PeekChar() == '=')
-                    {
-                        var ch = Input[Position].ToString();
-                        ReadChar();
-                        token = new Token() { Literal = ch + Ch.ToString(), Type = TokenType.EQ };
-                    }
-                    else
-                    {
-                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.ASSIGN };
-                    }
-                    
-                    break;
-                case ';':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.SEMICOLON };
-                    break;
-                case '(':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.LPAREN };
-                    break;
-                case ')':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.RPAREN };
-                    break;
-                case ',':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.COMMA };
-                    break;
-                case '+':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.PLUS };
-                    break;
-                case '{':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.LBRACE };
-                    break;
-                case '}':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.RBRACE };
-                    break;
-                case '-':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.MINUS };
-                    break;
-                case '!':
-                    
-                    if (PeekChar() == '=')
-                    {
-                        var ch = Input[Position].ToString();
-                        ReadChar();
-                        token = new Token() { Literal = ch + Ch.ToString(), Type = TokenType.NOT_EQ };
-                    }
-                    else
-                    {
-                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.BANG };
-                    }
-                    break;
-                case '/':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.SLASH };
-                    break;
-                case '*':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.ASTERISK };
-                    break;
-                case '<':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.LT };
-                    break;
-                case '>':
-                    token = new Token() { Literal = Ch.ToString(), Type = TokenType.GT };
-                    break;
-                case '\0':
-                    token = new Token() { Literal = "", Type = TokenType.EOF };
-                    break;
-                default:
-                    if (IsLetter(Ch))
-                    {
-                        token = new Token() { Literal = ReadIdentifier() };
-                        token.Type = LookupIdent(token.Literal);
-                        isSymbol = !isSymbol;
-                    }
-                    else if (Char.IsDigit(Ch))
-                    {
-                        token = new Token() { Literal = ReadNumber() };
-                        token.Type = TokenType.INT;
-                        isSymbol = !isSymbol;
-                    }
-                    else
-                    {
-                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.ILLEGAL };
-                    }
-                    break;
+                return _token;
             }
+            else
+            {
+                Token token;
+                bool isSymbol = true;
+                SkipWhitespace();
 
-            if (isSymbol)
-                ReadChar();
-            return token;
+                switch (Ch)
+                {
+                    case '=':
+                        if (PeekChar() == '=')
+                        {
+                            var ch = Input[Position].ToString();
+                            ReadChar();
+                            token = new Token() { Literal = ch + Ch.ToString(), Type = TokenType.EQ };
+                        }
+                        else
+                        {
+                            token = new Token() { Literal = Ch.ToString(), Type = TokenType.ASSIGN };
+                        }
+
+                        break;
+                    case ';':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.SEMICOLON };
+                        break;
+                    case '(':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.LPAREN };
+                        break;
+                    case ')':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.RPAREN };
+                        break;
+                    case ',':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.COMMA };
+                        break;
+                    case '+':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.PLUS };
+                        break;
+                    case '{':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.LBRACE };
+                        break;
+                    case '}':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.RBRACE };
+                        break;
+                    case '-':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.MINUS };
+                        break;
+                    case '!':
+
+                        if (PeekChar() == '=')
+                        {
+                            var ch = Input[Position].ToString();
+                            ReadChar();
+                            token = new Token() { Literal = ch + Ch.ToString(), Type = TokenType.NOT_EQ };
+                        }
+                        else
+                        {
+                            token = new Token() { Literal = Ch.ToString(), Type = TokenType.BANG };
+                        }
+                        break;
+                    case '/':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.SLASH };
+                        break;
+                    case '*':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.ASTERISK };
+                        break;
+                    case '<':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.LT };
+                        break;
+                    case '>':
+                        token = new Token() { Literal = Ch.ToString(), Type = TokenType.GT };
+                        break;
+                    case '\0':
+                        token = new Token() { Literal = "", Type = TokenType.EOF };
+                        break;
+                    default:
+                        if (IsLetter(Ch))
+                        {
+                            token = new Token() { Literal = ReadIdentifier() };
+                            token.Type = LookupIdent(token.Literal);
+                            isSymbol = !isSymbol;
+                        }
+                        else if (Char.IsDigit(Ch))
+                        {
+                            token = new Token() { Literal = ReadNumber() };
+                            token.Type = TokenType.INT;
+                            isSymbol = !isSymbol;
+                        }
+                        else
+                        {
+                            token = new Token() { Literal = Ch.ToString(), Type = TokenType.ILLEGAL };
+                        }
+                        break;
+                }
+
+                if (isSymbol)
+                    ReadChar();
+                _token = token;
+                return token;
+            }
+            
         }
 
         private bool IsLetter(char ch) => ch == '_' || Char.IsLetter(ch);
